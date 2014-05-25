@@ -1,15 +1,56 @@
-## Put comments here that give an overall description of what your
-## functions do
 
-## Write a short comment describing this function
+## Title: Caching the Inverse of a Matrix
 
-makeCacheMatrix <- function(x = matrix()) {
 
+## Getting the Cached values in order to input into cacheSolve() function
+## via creating the cacheable matrix:
+
+makeCacheMatrix <- function(original.matrix = matrix()) {
+  
+  # Check the validity of input:
+  
+  if (!is.matrix(original.matrix)) {
+    stop("Input a matrix")
+  }
+  
+  inverted.matrix <- NULL
+  
+  set <- function(y) {
+    original.matrix <<- y
+    inverted.matrix <<- NULL
+  }
+  
+  # Creating cached inverted matrix value:
+  get <- function() original.matrix
+  
+  # Inverting stage by using solve() function:
+  set.inverse <- function(solve) inverted.matrix <<- solve
+  get.inverse <- function() inverted.matrix
+  
+  list(
+    set = set,
+    get = get,
+    set.inverse = set.inverse,
+    get.inverse = get.inverse)
+  
 }
 
 
-## Write a short comment describing this function
+## Here the makeCacheMatrix() gives the computed invers of cacheable matrix.
+## So the cached inverse is returned by the cacheSolve() if the inverse computed
+## and the matrix is unchanged
 
-cacheSolve <- function(x, ...) {
-        ## Return a matrix that is the inverse of 'x'
+cacheSolve <- function(cacheable.matrix, ...) {
+  inverted.matrix <- cacheable.matrix$get.inverse()
+  # Is the cached matrix available?
+  if(!is.null(inverted.matrix)) {
+    message("Get the cached inverse matrix!")
+    return(inverted.matrix)
+  }
+  # Create the inverted matrix when the cached matrix is not available.
+  matrix.to.inverse <- cacheable.matrix$get()
+  inverted.matrix <- solve(matrix.to.inverse)
+  cacheable.matrix$set.inverse(inverted.matrix)
+  inverted.matrix
+  
 }
